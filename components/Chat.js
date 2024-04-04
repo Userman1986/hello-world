@@ -35,7 +35,7 @@ const Chat = ({ route }) => {
   }, [name]);
 
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor }]}> {/* Set background color */}
+    <View style={[styles.container, { backgroundColor: background }]}> {/* Set background color */}
       <GiftedChat
         messages={messages}
         onSend={newMessages =>
