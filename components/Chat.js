@@ -11,7 +11,7 @@ const Chat = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text>Hello Screen2!</Text>
+      <Text>Welcome to chat</Text>
     </View>
   );
 }

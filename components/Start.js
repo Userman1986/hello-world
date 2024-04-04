@@ -66,7 +66,6 @@ const Start = ({ navigation }) => {
           {/* Button to start chatting */}
           <Button
             title="Start Chatting"
-            onPress={signInUser}
             style={styles.buttonStartChatting}
             color="#757083"
           />
