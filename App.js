@@ -1,7 +1,7 @@
 
 
 // import the screens
-import Screen1 from './components/Chat';
+import Screen1 from './components/CHat';
 import Screen2 from './components/Start';
 
 // import react Navigation
