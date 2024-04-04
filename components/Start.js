@@ -1,18 +1,18 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-const Screen2 = ({ route, navigation }) => {
+const Start = ({ route, navigation }) => {
   const { name } = route.params;
 
   useEffect(() => {
     navigation.setOptions({ title: name });
   }, []);
 
- return (
-   <View style={styles.container}>
-     <Text>Hello Screen2!</Text>
-   </View>
- );
+  return (
+    <View style={styles.container}>
+      <Text>Hello Screen2!</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -23,4 +23,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Screen2;
+export default Start;

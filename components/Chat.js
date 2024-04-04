@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, Button, TextInput } from 'react-native';
+import { ImageBackground,StyleSheet, View, Text, Button, TextInput } from 'react-native';
 
-const Screen1 = ({ navigation }) => {
+const Chat = ({ navigation }) => {
   const [name, setName] = useState('');
 
   return (
     <View style={styles.container}>
+     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+    
       <Text>Hello Screen1!</Text>
       <TextInput
         style={styles.textInput}
@@ -15,8 +17,9 @@ const Screen1 = ({ navigation }) => {
       />
       <Button
         title="Go to Screen 2"
-        onPress={() => navigation.navigate('Screen2')}
+        onPress={() => navigation.navigate('Start', { name: name })}
       />
+       </ImageBackground>
     </View>
   );
 }
@@ -24,7 +27,7 @@ const Screen1 = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-     justifyContent: 'center',
+    justifyContent: 'center',
     alignItems: 'center'
   },
   textInput: {
@@ -36,4 +39,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Screen1;
+export default Chat;

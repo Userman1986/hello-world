@@ -1,9 +1,11 @@
+
+
 // import the screens
-import Screen1 from './components/Screen1';
-import Screen2 from './components/Screen2';
+import Screen1 from './components/Chat';
+import Screen2 from './components/Start';
 
 // import react Navigation
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, ImageBackground, StyleSheet, Text, View } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Create the navigator
