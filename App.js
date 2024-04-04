@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Chat from './components/CHat';
+import Chat from './components/Chat';
 import Start from './components/Start';
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
