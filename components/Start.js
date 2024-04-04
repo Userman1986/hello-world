@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOp
 
 const Start = ({ navigation }) => {
   const [name, setName] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedColor, setSelectedColor] = useState('#ffffff'); // Set default background color
   const image = require('../img/BackgroundImage.png');
 
   const handleColorSelection = (color) => {
@@ -14,7 +14,7 @@ const Start = ({ navigation }) => {
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <Text style={styles.text}>Welcome</Text>
-        <View style={styles.containerWhite}>
+        <View style={[styles.containerWhite, { backgroundColor: selectedColor }]}> {/* Set background color */}
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.textInput}
@@ -57,7 +57,7 @@ const Start = ({ navigation }) => {
           </View>
           <Button
             title="Start Chatting"
-            onPress={() => navigation.navigate('Chat', { name })}
+            onPress={() => navigation.navigate('Chat', { name, backgroundColor: selectedColor })} 
             color="#757083"
           />
         </View>
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: 'center',
     marginBottom: '6%',
+    borderRadius: 10, // Add border radius for better appearance
   },
   text: {
     padding: '25%',
