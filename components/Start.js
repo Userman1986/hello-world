@@ -1,28 +1,20 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, KeyboardAvoidingView, Platform} from 'react-native';
 
-// Start component
 const Start = ({ navigation }) => {
-  // State variables to manage user's name and selected background color
   const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const image = require('../img/BackgroundImage.png'); // Image background source
-   // Function to handle color selection
+  const image = require('../img/BackgroundImage.png');
+
   const handleColorSelection = (color) => {
     setSelectedColor(color);
   };
 
-
-
   return (
     <View style={styles.container}>
-      {/* Image background */}
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        {/* App title */}
         <Text style={styles.text}>Welcome</Text>
-        {/* Container for user input and color selection */}
         <View style={styles.containerWhite}>
-          {/* Text input for user's name */}
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.textInput}
@@ -32,9 +24,7 @@ const Start = ({ navigation }) => {
               placeholderTextColor="#757083"
             />
           </View>
-          {/* Text indicating color selection */}
           <Text style={styles.text1}>Choose Background Color:</Text>
-          {/* Color selection buttons */}
           <View style={styles.colorButtonsContainer}>
             <TouchableOpacity
               style={[
@@ -65,22 +55,18 @@ const Start = ({ navigation }) => {
               onPress={() => handleColorSelection('#B9C6AE')}
             />
           </View>
-          {/* Button to start chatting */}
           <Button
             title="Start Chatting"
-            onPress={() => navigation.navigate('Chat')}
-            style={styles.buttonStartChatting}
+            onPress={() => navigation.navigate('Chat', { name })}
             color="#757083"
           />
         </View>
-        {/* Keyboard avoiding view for iOS */}
         {Platform.OS === "ios" ? (<KeyboardAvoidingView behavior="padding" />) : null}
       </ImageBackground>
     </View>
   );
 };
 
-// Styles for the Start component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -156,4 +142,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#090C08' 
   }
 });
+
 export default Start;

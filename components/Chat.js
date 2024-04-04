@@ -1,5 +1,4 @@
-
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
 const Chat = ({ route, navigation }) => {
@@ -7,7 +6,7 @@ const Chat = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.setOptions({ title: name });
-  }, []);
+  }, [name, navigation]);
 
   return (
     <View style={styles.container}>
@@ -24,5 +23,4 @@ const styles = StyleSheet.create({
   }
 });
 
-// Exporting the Chat component as default
 export default Chat;
