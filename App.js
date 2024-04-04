@@ -13,7 +13,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Screen1"
+        initialRouteName="Start"
       >
         <Stack.Screen
           name="Start"
