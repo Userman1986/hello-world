@@ -3,14 +3,11 @@ import { StyleSheet, View, Platform } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 
 const Chat = ({ route }) => {
-  const { name, backgroundColor } = route.params; // Extracting backgroundColor from route params
+  const { name, backgroundColor } = route.params;
 
-  // State to manage chat messages
   const [messages, setMessages] = useState([]);
 
-  // useEffect to initialize chat messages
   useEffect(() => {
-    // Adding initial system message
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, {
         _id: 1,
@@ -20,7 +17,6 @@ const Chat = ({ route }) => {
       })
     );
 
-    // Adding initial user message
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, {
         _id: 2,
@@ -35,16 +31,15 @@ const Chat = ({ route }) => {
   }, [name]);
 
   return (
-    <View style={[styles.container, {backgroundColor: background}]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <GiftedChat
         messages={messages}
         onSend={newMessages =>
           setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
         }
         user={{ _id: 1 }}
-        renderUsernameOnMessage // Display username on messages
+        renderUsernameOnMessage
       />
-     
     </View>
   );
 };
