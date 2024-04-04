@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, KeyboardAvoidingView, Platform} from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, Platform} from 'react-native';
 
 const Start = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -61,7 +61,7 @@ const Start = ({ navigation }) => {
             color="#757083"
           />
         </View>
-        {Platform.OS === "ios" ? (<KeyboardAvoidingView behavior="padding" />) : null}
+       
       </ImageBackground>
     </View>
   );
