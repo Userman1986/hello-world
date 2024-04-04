@@ -1,8 +1,8 @@
 
 
 // import the screens
-import Screen1 from './components/CHat';
-import Screen2 from './components/Start';
+import Start from './components/Start';
+import Chat from './components/Chat';
 
 // import react Navigation
 import { NavigationContainer, ImageBackground, StyleSheet, Text, View } from '@react-navigation/native';
