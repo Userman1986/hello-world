@@ -37,7 +37,7 @@ Utilization of Gifted Chat library for chat interface.
 Inclusion of comments in the codebase.
 Step By Step Guide:
 
-Clone the repository: git clone https://github.com/michaelleoniuk/ChatApp
+Clone the repository: git clone (https://github.com/Userman1986/hello-world)
 Install dependencies, including React Native, Expo, Firebase Storage, Firebase, React Navigation, react-native-gifted-chat, expo-image-picker, expo-location, and expo-async-storage.
 Configure Firebase:
 Sign in at Google Firebase.
