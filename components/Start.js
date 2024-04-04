@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, KeyboardAvoidingView, Platform} from 'react-native';
-
+import {signInAnonymously } from 'firebase/auth';
 // Start component
 const Start = ({ navigation }) => {
   // State variables to manage user's name and selected background color
