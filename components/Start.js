@@ -70,7 +70,7 @@ const Start = ({ navigation }) => {
           {/* Button to start chatting */}
           <Button
             title="Start Chatting"
-            onPress={signInUser}
+            onPress={() => navigation.navigate('Chat', { name, backgroundColor: selectedColor })}
             style={styles.buttonStartChatting}
             color="#757083"
           />
