@@ -1,16 +1,45 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { GiftedChat } from 'react-native-gifted-chat';
 
-const Chat = ({ route, navigation }) => {
+const Chat = ({ route }) => {
   const { name } = route.params;
 
+  // State to manage chat messages
+  const [messages, setMessages] = useState([]);
+
+  // useEffect to initialize chat messages
   useEffect(() => {
-    navigation.setOptions({ title: name });
-  }, [name, navigation]);
+    // Adding initial system message
+    setMessages(previousMessages => GiftedChat.append(previousMessages, {
+      _id: 1,
+      text: `Welcome, ${name}! You've entered the chat.`,
+      createdAt: new Date(),
+      system: true,
+    }));
+
+    // Adding initial user message
+    setMessages(previousMessages => GiftedChat.append(previousMessages, {
+      _id: 2,
+      text: 'Hello, this is a user message.',
+      createdAt: new Date(),
+      user: {
+        _id: 1,
+        name: name,
+      },
+    }));
+  }, [name]);
 
   return (
     <View style={styles.container}>
-      <Text>Welcome to chat</Text>
+      <GiftedChat
+        messages={messages}
+        onSend={newMessages => setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))}
+        user={{ _id: 1 }}
+      />
+      {/* Keyboard adjustments for different devices */}
+      {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
+      {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
     </View>
   );
 }
@@ -18,9 +47,7 @@ const Chat = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+  },
 });
 
 export default Chat;
