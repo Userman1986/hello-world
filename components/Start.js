@@ -12,12 +12,23 @@ const Start = ({ navigation }) => {
     setSelectedColor(color);
   };
 
+   // Function to sign in anonymously
+   const signInUser = () => {
+    signInAnonymously(auth)
+      .then(result => {
+        navigation.navigate('Chat', { name: name, color: selectedColor, id: result.user.uid }); // Navigate to Chat screen after successful sign-in
+        Alert.alert('Signed in successfully'); // Alert for successful sign-in
+      }).catch((error) => {
+        Alert.alert('Unable to sign in, try later'); // Alert for unsuccessful sign-in
+      })
+  };
+
   return (
     <View style={styles.container}>
       {/* Image background */}
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         {/* App title */}
-        <Text style={styles.text}>Chat App</Text>
+        <Text style={styles.text}>Welcome</Text>
         {/* Container for user input and color selection */}
         <View style={styles.containerWhite}>
           {/* Text input for user's name */}
@@ -66,6 +77,7 @@ const Start = ({ navigation }) => {
           {/* Button to start chatting */}
           <Button
             title="Start Chatting"
+            onPress={signInUser}
             style={styles.buttonStartChatting}
             color="#757083"
           />
