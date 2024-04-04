@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 
-const Chat = ({ route }) => {
+const Chat = ({ route, navigation }) => {
   const { name, backgroundColor } = route.params;
 
   const [messages, setMessages] = useState([]);
@@ -29,6 +29,11 @@ const Chat = ({ route }) => {
       })
     );
   }, [name]);
+
+  // Set the header title to display the user's name
+  useEffect(() => {
+    navigation.setOptions({ title: name });
+  }, [navigation, name]);
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
