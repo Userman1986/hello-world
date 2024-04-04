@@ -75,8 +75,7 @@ const Start = ({ navigation }) => {
             color="#757083"
           />
         </View>
-        {/* Keyboard avoiding view for iOS */}
-        {Platform.OS === "ios" ? (<KeyboardAvoidingView behavior="padding" />) : null}
+     
       </ImageBackground>
     </View>
   );
