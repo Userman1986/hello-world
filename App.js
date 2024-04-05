@@ -1,19 +1,19 @@
-import {StyleSheet, LogBox } from 'react-native';
-LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { LogBox } from 'react-native';
 import Start from './components/Start';
 import Chat from './components/Chat';
-import {initializeApp} from "firebase/app";
-import {getFirestore} from "firebase/firestore";
-import {getStorage} from "firebase/storage";
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useEffect} from "react";
-import {Alert} from "react-native";
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+// Ignore specific logs
+LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-
   const firebaseConfig = {
     apiKey: "AIzaSyC1Bk-GfGYoQZWFtNcQcHZN5-HzS9in-Wc",
     authDomain: "chatapp-2842c.firebaseapp.com",
@@ -24,45 +24,18 @@ const App = () => {
   };
 
   const app = initializeApp(firebaseConfig);
-const db = getFirestore(app)
-const storage = getStorage(app);
+  const db = getFirestore(app);
 
-const Stack = createNativeStackNavigator();
-
-
-
-return (
-  <NavigationContainer>
-    <Stack.Navigator
-      initialRouteName="Start"
-    >
-      <Stack.Screen
-        name="Start"
-        component={Start}
-      />
-      <Stack.Screen
-        name="Chat"
-      >
-          {(props) => ( 
-          <Chat
-           db={db}
-           storage={storage}
-      
-           {...props}
-          />
-          )}
-
-      </Stack.Screen>
-    </Stack.Navigator>
-  </NavigationContainer>
-);
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Start">
+        <Stack.Screen name="Start" component={Start} />
+        <Stack.Screen name="Chat">
+          {(props) => <Chat db={db} {...props} />}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
-const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  backgroundColor: '#fff',
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-});
+
 export default App;

@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, Platform} from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, Platform, Alert } from 'react-native';
 import { getAuth, signInAnonymously } from 'firebase/auth';
 
 const Start = ({ navigation }) => {
-  // State variables to manage user's name and selected background color
   const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const image = require('../img/BackgroundImage.png'); // Image background source
-
 
   const auth = getAuth(); // Initializing Firebase authentication object
 
@@ -15,14 +12,12 @@ const Start = ({ navigation }) => {
   const signInUser = () => {
     signInAnonymously(auth)
       .then(result => {
-        navigation.navigate('Chat', { name: name, color: selectedColor, id: result.user.uid }); // Navigate to Chat screen after successful sign-in
+        navigation.navigate('Chat', { name: name, backgroundColor: selectedColor, id: result.user.uid }); // Navigate to Chat screen after successful sign-in
         Alert.alert('Signed in successfully'); // Alert for successful sign-in
       }).catch((error) => {
         Alert.alert('Unable to sign in, try later'); // Alert for unsuccessful sign-in
       })
   };
-
-
 
   // Function to handle color selection
   const handleColorSelection = (color) => {
@@ -32,7 +27,7 @@ const Start = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Image background */}
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+      <ImageBackground source={require('../img/BackgroundImage.png')} resizeMode="cover" style={styles.image}>
         {/* App title */}
         <Text style={styles.text}>Chat App</Text>
         {/* Container for user input and color selection */}
@@ -83,12 +78,11 @@ const Start = ({ navigation }) => {
           {/* Button to start chatting */}
           <Button
             title="Start Chatting"
-            onPress={() => navigation.navigate('Chat', { name, backgroundColor: selectedColor })}
+            onPress={signInUser}
             style={styles.buttonStartChatting}
             color="#757083"
           />
         </View>
-     
       </ImageBackground>
     </View>
   );
@@ -159,15 +153,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     margin: 10
   },
-  buttonStartChatting: {
-    backgroundColor: '#757083',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginTop: 10
-  },
-  button: {
-    backgroundColor: '#090C08' 
-  }
 });
+
 export default Start;
