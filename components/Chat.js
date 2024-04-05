@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { collection, addDoc, onSnapshot, orderBy, query } from "firebase/firestore";
 
 const Chat = ({ route, navigation, db }) => {
@@ -9,6 +10,20 @@ const Chat = ({ route, navigation, db }) => {
 
   const onSend = (newMessages) => {
     addDoc(collection(db, "messages"), newMessages[0])
+  }
+
+  const renderBubble = (props) => {
+    return <Bubble
+      {...props}
+      wrapperStyle={{
+        right: {
+          backgroundColor: "#757083"
+        },
+        left: {
+          backgroundColor: "#FFF"
+        }
+      }}
+    />
   }
 
   useEffect(() => {
@@ -42,6 +57,7 @@ const Chat = ({ route, navigation, db }) => {
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <GiftedChat
         messages={messages}
+        renderBubble={renderBubble}
         onSend={onSend}
         user={{
           _id: id,
@@ -53,10 +69,13 @@ const Chat = ({ route, navigation, db }) => {
   );
 };
 
+
+
+// Styles for the Chat component
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+container: {
+flex: 1,
+},
 });
 
 export default Chat;
