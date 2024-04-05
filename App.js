@@ -1,10 +1,16 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Chat from './components/Chat';
+import {StyleSheet, LogBox } from 'react-native';
+LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
 import Start from './components/Start';
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import Chat from './components/Chat';
+import {initializeApp} from "firebase/app";
+import {getFirestore} from "firebase/firestore";
+import {getStorage} from "firebase/storage";
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {disableNetwork} from "firebase/firestore";
+import {enableNetwork} from "firebase/firestore";
+import {useEffect} from "react";
+import {Alert} from "react-native";
 
 const Stack = createNativeStackNavigator();
 
