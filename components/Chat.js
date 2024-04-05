@@ -1,12 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
+import { collection, addDoc, onSnapshot, orderBy, query } from "firebase/firestore";
 
-const Chat = ({ route, navigation }) => {
-  const { name, backgroundColor } = route.params;
-
+const Chat = ({ route, navigation, db, isConnected, storage }) => {
+  // Destructuring route.params
+  const { name, background, id } = route.params;
+  // State to manage messages
   const [messages, setMessages] = useState([]);
 
+  // Function to handle sending messages
+  const onSend = (newMessages) => {
+    addDoc(collection(db, "messages"), newMessages[0])
+  }
+
+  // Function to load cached messages from AsyncStorage//
+    const loadCachedMessages = async () => {
+      const cachedMessages = (await AsyncStorage.getItem("messages")) || [];
+      setLists(JSON.parse(cachedMessages)); // setLists is undefined here, it should be setMessages
+    };
+  
+    // Function to cache messages using AsyncStorage
+    const cacheMessages = async (messagesToCache) => {
+      try {
+        await AsyncStorage.setItem("messages", JSON.stringify(messagesToCache));
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    // Variable to hold unsubscribe function
+    let unsubMessages;
+
+    // Effect hook to set navigation title
+    useEffect(() => {
+        navigation.setOptions({ title: name });
+    }, []);
+
+    // Effect hook to listen for changes in messages collection
+    useEffect(() => {
+      if (isConnected === true) {
+        if (unsubMessages) unsubMessages();
+        unsubMessages = null;
+        const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+        unsubMessages = onSnapshot(q, (docs) => {
+          let newMessages = [];
+          docs.forEach((doc) => {
+            newMessages.push({
+              id: doc.id,
+              ...doc.data(),
+              createdAt: new Date(doc.data().createdAt.toMillis()),
+            });
+            })
+            cacheMessages(newMessages);
+            setMessages(newMessages);
+          });
+
+        } else {
+          loadCachedMessages();
+
+          return () => {
+            if (unsubmessage) unsubmessage();
+          };
+        }
+
+      return () => {
+        if (unsubMessages) unsubMessages();
+      }
+    }, []);
+    
   useEffect(() => {
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ImageBackground, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, Platform} from 'react-native';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 const Start = ({ navigation }) => {
   // State variables to manage user's name and selected background color
@@ -8,6 +9,18 @@ const Start = ({ navigation }) => {
   const image = require('../img/BackgroundImage.png'); // Image background source
 
 
+  const auth = getAuth(); // Initializing Firebase authentication object
+
+  // Function to sign in anonymously
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then(result => {
+        navigation.navigate('Chat', { name: name, color: selectedColor, id: result.user.uid }); // Navigate to Chat screen after successful sign-in
+        Alert.alert('Signed in successfully'); // Alert for successful sign-in
+      }).catch((error) => {
+        Alert.alert('Unable to sign in, try later'); // Alert for unsuccessful sign-in
+      })
+  };
 
 
 
