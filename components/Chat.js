@@ -1,11 +1,10 @@
-// Chat.js
 import { useEffect, useState } from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { collection, addDoc, onSnapshot, orderBy, query } from "firebase/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Chat = ({ route, navigation, db, isConnected }) => {
+const Chat = ({ route, db, isConnected }) => {
   const { name, backgroundColor, id } = route.params;
   const [messages, setMessages] = useState([]);
 
@@ -68,7 +67,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 
   const renderInputToolbar = (props) => {
     return isConnected ? <InputToolbar {...props} /> : null;
-  }
+  };
 
   useEffect(() => {
     setMessages(previousMessages =>
