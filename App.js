@@ -1,12 +1,14 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { LogBox } from 'react-native';
-import Start from './components/Start';
-import Chat from './components/Chat';
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import {StyleSheet, LogBox } from 'react-native';
+import { initializeApp } from "firebase/app";
+import { getFirestore, enableNetwork, disableNetwork } from "firebase/firestore";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
+import { useNetInfo } from "@react-native-community/netinfo";
+
+import Start from './components/Start';
+import Chat from './components/Chat';
 
 // Ignore specific logs
 LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
@@ -25,13 +27,25 @@ const App = () => {
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  
+  const netInfo = useNetInfo();
+  const [isConnected, setIsConnected] = useState(netInfo.isConnected);
+
+  useEffect(() => {
+    setIsConnected(netInfo.isConnected);
+    if (netInfo.isConnected) {
+      enableNetwork(db);
+    } else {
+      disableNetwork(db);
+    }
+  }, [netInfo.isConnected]);
 
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Start">
         <Stack.Screen name="Start" component={Start} />
         <Stack.Screen name="Chat">
-          {(props) => <Chat db={db} {...props} />}
+          {(props) => <Chat db={db} isConnected={isConnected} {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
