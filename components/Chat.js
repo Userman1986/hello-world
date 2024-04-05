@@ -1,47 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 
-const Chat = ({ route, db }) => {
-  const { userId, name, backgroundColor } = route.params;
+const Chat = ({ route, navigation }) => {
+  const { name, backgroundColor } = route.params;
 
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(query(collection(db, "messages"), orderBy("createdAt", "desc")), (snapshot) => {
-      const fetchedMessages = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        fetchedMessages.push({
-          ...data,
-          _id: doc.id,
-          createdAt: data.createdAt.toDate(), // Convert Firestore Timestamp to Date object
-        });
-      });
-      setMessages(fetchedMessages);
-    });
-    return () => unsubscribe();
-  }, [db]);
+    setMessages(previousMessages =>
+      GiftedChat.append(previousMessages, {
+        _id: 1,
+        text: `Welcome, ${name}! You've entered the chat.`,
+        createdAt: new Date(),
+        system: true,
+      })
+    );
 
-  const onSend = (newMessages) => {
-    newMessages.forEach((message) => {
-      collection(db, "messages").add({
-        ...message,
-        createdAt: new Date(), // Use current date as createdAt
-      });
-    });
-  };
+    setMessages(previousMessages =>
+      GiftedChat.append(previousMessages, {
+        _id: 2,
+        text: 'Hello, this is a user message.',
+        createdAt: new Date(),
+        user: {
+          _id: 1,
+          name: name,
+        },
+      })
+    );
+  }, [name]);
+
+  // Set the header title to display the user's name
+  useEffect(() => {
+    navigation.setOptions({ title: name });
+  }, [navigation, name]);
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <GiftedChat
         messages={messages}
-        onSend={onSend}
-        user={{
-          _id: userId,
-          name: name,
-        }}
+        onSend={newMessages =>
+          setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+        }
+        user={{ _id: 1 }}
         renderUsernameOnMessage
       />
     </View>
