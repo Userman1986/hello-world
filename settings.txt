@@ -1,0 +1,4 @@
+root: C:\Users\lenovo\OneDrive\Документы\GitHub\hello-world 
+path: C:\Program Files\nodejs 
+arch: 64 
+proxy: none
