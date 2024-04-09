@@ -1,107 +1,217 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
-import { collection, addDoc, onSnapshot, orderBy, query } from "firebase/firestore";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from "react";
+import { StyleSheet, View, Platform, KeyboardAvoidingView, Text, TouchableOpacity, Alert } from "react-native";
+import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import MapView from "react-native-maps";
+import CustomActions from "./CustomActions";
+import { Audio } from "expo-av";
 
-const Chat = ({ route, db, isConnected }) => {
-  const { name, backgroundColor, id } = route.params;
+const Chat = ({ db, route, navigation, isConnected, storage }) => {
   const [messages, setMessages] = useState([]);
+  const { name, userID } = route.params;
+  const {selectedColor} = route.params;
+  let soundObject = null;
 
-  const onSend = (newMessages) => {
-    addDoc(collection(db, "messages"), newMessages[0])
-  }
-
-  const renderBubble = (props) => {
-    return <Bubble
-      {...props}
-      wrapperStyle={{
-        right: {
-          backgroundColor: "#757083"
-        },
-        left: {
-          backgroundColor: "#FFF"
-        }
-      }}
-    />
-  }
-
-  const loadCachedMessages = async () => {
-    try {
-      const cachedMessages = await AsyncStorage.getItem('cachedMessages');
-      if (cachedMessages !== null) {
-        setMessages(JSON.parse(cachedMessages));
-      }
-    } catch (error) {
-      console.error("Error loading cached messages:", error);
-    }
-  }
-
-  const cacheMessages = async (messages) => {
-    try {
-      await AsyncStorage.setItem('cachedMessages', JSON.stringify(messages));
-    } catch (error) {
-      console.error("Error caching messages:", error);
-    }
-  }
+  let unsubMessages;
 
   useEffect(() => {
-    if (isConnected) {
-      const unsubscribe = onSnapshot(query(collection(db, "messages"), orderBy("createdAt", "desc")), (snapshot) => {
+    navigation.setOptions({ title: name });
+
+    if (isConnected === true) {
+      if (unsubMessages) unsubMessages();
+      unsubMessages = null;
+
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      unsubMessages = onSnapshot(q, (docs) => {
         let newMessages = [];
-        snapshot.forEach((doc) => {
+        docs.forEach((doc) => {
           newMessages.push({
-            _id: doc.id, // Added _id field
+            id: doc.id,
             ...doc.data(),
             createdAt: new Date(doc.data().createdAt.toMillis()),
           });
         });
+        cacheMessages(newMessages);
         setMessages(newMessages);
-        cacheMessages(newMessages); // Cache messages when fetched
       });
-      return () => unsubscribe();
-    } else {
-      loadCachedMessages(); // Load cached messages when offline
-    }
+    } else loadCachedMessages();
+
+    return () => {
+      if (unsubMessages) unsubMessages();
+    };
   }, [isConnected]);
 
-  const renderInputToolbar = (props) => {
-    return isConnected ? <InputToolbar {...props} /> : null;
+  const loadCachedMessages = async () => {
+    const cachedMessages = (await AsyncStorage.getItem("messages")) || [];
+    setMessages(JSON.parse(cachedMessages));
   };
 
-  useEffect(() => {
-    setMessages(previousMessages =>
-      GiftedChat.append(previousMessages, {
-        _id: 1,
-        text: `Welcome, ${name}! You've entered the chat.`,
-        createdAt: new Date(),
-        system: true,
-      })
+  const cacheMessages = async (messagesToCache) => {
+    try {
+      await AsyncStorage.setItem("messages", JSON.stringify(messagesToCache));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const onSend = (newMessages) => {
+    addDoc(collection(db, "messages"), newMessages[0]);
+  };
+
+  const renderInputToolbar = (props) => {
+    if (isConnected === true) return <InputToolbar {...props} containerStyle={styles.input} />;
+    else return null;
+  };
+
+  const renderBubble = (props) => {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: "#000",
+          },
+          left: {
+            backgroundColor: "#FFF",
+          },
+        }}
+      />
     );
-  }, [name]);
+  };
+
+  const renderCustomActions = (props) => {
+    return <CustomActions onSend={onSend} storage={storage} {...props} userID={userID} />;
+  };
+
+  const renderCustomView = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  };
+
+  const renderMessageAudio = (props) => {
+    return (
+        <View {...props}>
+            <TouchableOpacity
+                style={{ backgroundColor: "#FF0", borderRadius: 10, margin: 5 }}
+                onPress={async () => {
+                    try {
+                        // Log the URI for debugging
+                        console.log("Playing sound from URI:", props.currentMessage.audio);
+                        
+                        // Stop and unload any currently playing sound first
+                        if (soundObject) {
+                            await soundObject.unloadAsync();
+                            soundObject.setOnPlaybackStatusUpdate(null); // Remove event listener
+                            soundObject = null;
+                        }
+
+                        // Create a new sound object
+                        soundObject = new Audio.Sound();
+                        await soundObject.loadAsync({ uri: props.currentMessage.audio });
+                        soundObject.setOnPlaybackStatusUpdate((status) => {
+                            if (status.didJustFinish && !status.isLooping) {
+                                soundObject.unloadAsync(); // Unload after playing
+                            }
+                        });
+                        await soundObject.playAsync();
+                    } catch (error) {
+                        console.error("Error playing sound:", error);
+                        Alert.alert("Playback Error", "Failed to play sound.");
+                    }
+                }}
+            >
+                <Text style={{ textAlign: "center", color: 'black', padding: 5 }}>
+                    Play Sound
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
+};
+
+
+  useEffect(() => {
+    navigation.setOptions({ title: name });
+  
+    if (isConnected === true) {
+      if (unsubMessages) unsubMessages();
+      unsubMessages = null;
+  
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      unsubMessages = onSnapshot(q, (docs) => {
+        let newMessages = [];
+        docs.forEach((doc) => {
+          newMessages.push({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: new Date(doc.data().createdAt.toMillis())
+          });
+        });
+        cacheMessages(newMessages);
+        setMessages(newMessages);
+      });
+    } else {
+      loadCachedMessages();
+    }
+  
+    return () => {
+      if (unsubMessages) unsubMessages();
+      if (soundObject) soundObject.unloadAsync();
+    };
+  }, [isConnected]);
+  
+  
+  
 
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
+    <View style={[styles.container, {backgroundColor: selectedColor}]}>
       <GiftedChat
         messages={messages}
         renderBubble={renderBubble}
-        onSend={onSend}
+        renderInputToolbar={renderInputToolbar}
+        onSend={(messages) => onSend(messages)}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
+        renderMessageAudio={renderMessageAudio}
         user={{
-          _id: id,
-          name: name,
+          _id: userID,
+          name,
         }}
-        renderUsernameOnMessage
-        renderInputToolbar={renderInputToolbar} // Rendering InputToolbar based on connection status
       />
+
+      {Platform.OS === "android" ? (
+        <KeyboardAvoidingView behavior="height" />
+      ) : null}
     </View>
   );
 };
 
-// Styles for the Chat component
+export default Chat;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  input: {
+    paddingBottom: 5,
+  }
 });
-
-export default Chat;
