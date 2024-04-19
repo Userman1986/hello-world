@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -38,10 +38,17 @@ const App = () => {
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  // Initialize Firebase auth with AsyncStorage persistence
-  const auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-  });
+  // Check if Firebase Authentication has already been initialized
+  const [authInitialized, setAuthInitialized] = useState(false);
+  let auth;
+  if (!authInitialized) {
+    auth = initializeAuth(app, {
+      persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+    });
+    setAuthInitialized(true);
+  } else {
+    auth = getAuth();
+  }
 
   // Get network connection status
   const netInfo = useNetInfo();
